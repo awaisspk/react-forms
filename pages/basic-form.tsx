@@ -1,3 +1,4 @@
+import {DevTool} from '@hookform/devtools';
 import {
   Container,
   Input,
@@ -15,6 +16,7 @@ import {
   SubmitHandler,
   useForm,
   useFormContext,
+  useFormState,
 } from 'react-hook-form';
 
 const Form = styled('form', {
@@ -22,11 +24,18 @@ const Form = styled('form', {
   gap: '$7',
   gridAutoRows: 'auto',
   gridTemplateColumns: '1fr',
-  gridTemplateAreas: `"firstName " "lastName" "email" "password" "submit"`,
+  gridTemplateAreas: `"firstName "
+                      "lastName"
+                      "email"
+                      "password"
+                      "submit"`,
 
   '@media screen and (min-width: 640px)': {
     gridTemplateColumns: '1fr 1fr',
-    gridTemplateAreas: `"firstName lastName" "email email" "password password" "submit submit"`,
+    gridTemplateAreas: `"firstName lastName"
+                        "email email"
+                        "password password"
+                        "submit submit"`,
   },
 });
 
@@ -41,7 +50,10 @@ const BasicFormPage = () => {
   const resolver = useYupValidationResolver(formSchema);
   const methods = useForm<FormData>({resolver});
 
-  const {handleSubmit} = methods;
+  const {handleSubmit, control} = methods;
+  const {touchedFields} = useFormState({control});
+
+  console.log(touchedFields);
 
   const onSubmit: SubmitHandler<FormData> = (data) =>
     alert(JSON.stringify(data));
@@ -74,6 +86,7 @@ const BasicFormPage = () => {
               </Button>
             </div>
           </Form>
+          <DevTool control={control} />
         </FormProvider>
       </Container>
     </Container>
@@ -107,11 +120,13 @@ const TextInput = (props: InputProps) => {
               placeholder={label}
               bordered
               fullWidth
+              aria-label={label}
             />
           ) : (
             <Input
               {...field}
               {...rest}
+              aria-label={label}
               type={type}
               placeholder={label}
               bordered
